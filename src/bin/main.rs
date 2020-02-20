@@ -12,9 +12,10 @@ mod cmd;
 use cmd::args::*;
 use env_logger;
 use env_logger::Env;
+use main_error::MainError;
 use std::env;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), MainError> {
     let opt = Pb::from_args();
     if let Pb {
         loglevel: Some(ref level),

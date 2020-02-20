@@ -598,6 +598,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "main_error"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3516df0fb44d98fe6d6e859d224adfb7b6686447937e5b96308d6061595eed04"
+
+[[package]]
 name = "matches"
 version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -716,8 +722,8 @@ checksum = "2839e79665f131bdb5782e51f2c6c9599c133c6098982a54c794358bf432529c"
 
 [[package]]
 name = "packybara"
-version = "0.38.0"
-source = "git+https://github.com/jlgerber/packybara?tag=v0.38.0#97a9f23dd9d588f0df5aa0f93035e3d8f522f42a"
+version = "0.38.8"
+source = "git+https://github.com/jlgerber/packybara?tag=v0.38.8#49f2b5a6cf37f9eaa84c3d7a8d6d96685d3eb4f8"
 dependencies = [
  "chrono",
  "env_logger",
@@ -744,6 +750,7 @@ version = "0.38.0"
 dependencies = [
  "env_logger",
  "log",
+ "main_error",
  "packybara",
  "prettytable-rs",
  "structopt",

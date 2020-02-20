@@ -163,16 +163,25 @@ pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error
             PackratDb::add_versionpins(tx, pieces[0].to_string(), pieces[1].to_string());
         if let Some(level) = level {
             add_versionpins = add_versionpins.level(level);
+        } else {
+            add_versionpins = add_versionpins.level("facility");
         }
         if let Some(site) = site {
             add_versionpins = add_versionpins.site(site);
+        } else {
+            add_versionpins = add_versionpins.site("any");
         }
         if let Some(role) = role {
             add_versionpins = add_versionpins.role(role);
+        } else {
+            add_versionpins = add_versionpins.role("any");
         }
         if let Some(platform) = platform {
             add_versionpins = add_versionpins.platform(platform);
+        } else {
+            add_versionpins = add_versionpins.platform("any");
         }
+
         let username = whoami::username();
         let comment = "auto added";
         let update_cnt = add_versionpins.create()?.commit(&username, &comment)?;
