@@ -9,6 +9,7 @@ use super::utils::extract_coords;
  * permission of Jonathan Gerber
  *******************************************************/
 use super::utils::truncate;
+use log;
 use packybara::db::search_attribute::OrderDirection;
 use packybara::db::traits::*;
 use packybara::db::update::versionpins::VersionPinChange;
@@ -18,7 +19,6 @@ use packybara::{LtreeSearchMode, SearchAttribute};
 use prettytable::{cell, format, row, table};
 use std::str::FromStr;
 use whoami;
-
 /// Pretty print the set of version pins from the database that match the provided criteria
 ///
 /// # Arguments
@@ -175,7 +175,7 @@ pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error
         }
         let username = whoami::username();
         let comment = "auto added";
-        let update_cnt = add_versionpins.commit(&username, &comment)?;
+        let update_cnt = add_versionpins.create()?.commit(&username, &comment)?;
         println!("{}", update_cnt);
     };
     Ok(())
