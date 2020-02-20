@@ -1,4 +1,4 @@
-use super::args::{PbFind, PbSet};
+use super::args::{PbAdd, PbFind, PbSet};
 use super::utils::extract_coords;
 /*******************************************************
  * Copyright (C) 2019,2020 Jonathan Gerber <jlgerber@gmail.com>
@@ -144,5 +144,39 @@ pub fn set<'a>(tx: Transaction<'a>, cmd: PbSet) -> Result<(), Box<dyn std::error
 
     let update_cnt = update_versionpins.update()?.commit(&username, &comment)?;
     println!("{}", update_cnt);
+    Ok(())
+}
+
+/// Add one or more versionpin changes
+pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error::Error>> {
+    if let PbAdd::VersionPins {
+        distribution,
+        level,
+        site,
+        role,
+        platform,
+    } = cmd
+    {
+        let pieces = distribution.split("-").collect::<Vec<_>>();
+
+        let mut add_versionpins =
+            PackratDb::add_versionpins(tx, pieces[0].to_string(), pieces[1].to_string());
+        if let Some(level) = level {
+            add_versionpins = add_versionpins.level(level);
+        }
+        if let Some(site) = site {
+            add_versionpins = add_versionpins.site(site);
+        }
+        if let Some(role) = role {
+            add_versionpins = add_versionpins.role(role);
+        }
+        if let Some(platform) = platform {
+            add_versionpins = add_versionpins.platform(platform);
+        }
+        let username = whoami::username();
+        let comment = "auto added";
+        let update_cnt = add_versionpins.commit(&username, &comment)?;
+        println!("{}", update_cnt);
+    };
     Ok(())
 }

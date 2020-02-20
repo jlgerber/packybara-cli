@@ -38,4 +38,17 @@ pub enum PbAdd {
         #[structopt(name = "WITHS")]
         withs: Vec<String>,
     },
+    #[structopt(display_order = 6, name = "versionpins")]
+    VersionPins {
+        #[structopt(short, long = "distribution", display_order = 1)]
+        distribution: String,
+        #[structopt(short, long, display_order = 2)]
+        level: Option<String>,
+        #[structopt(short, long, display_order = 3)]
+        role: Option<String>,
+        #[structopt(short, long, display_order = 4)]
+        platform: Option<String>,
+        #[structopt(short, long, display_order = 5)]
+        site: Option<String>,
+    },
 }

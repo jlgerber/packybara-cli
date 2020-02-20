@@ -96,6 +96,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let tx = client.transaction().unwrap();
                 cmd::withs::add(tx, cmd)?;
             }
+            PbAdd::VersionPins { .. } => {
+                let tx = client.transaction().unwrap();
+                cmd::versionpins::add(tx, cmd)?;
+            }
         },
         PbCrud::Set { cmd } => match cmd {
             PbSet::VersionPins { .. } => {
