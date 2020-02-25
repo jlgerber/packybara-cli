@@ -30,6 +30,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
         site,
         search_mode,
         full_withs,
+        json,
         ..
     } = cmd
     {
@@ -44,30 +45,35 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
             .site(site.as_str())
             .query()?;
 
-        let mut table =
-            table!([bFg => "PIN ID", "DISTRIBUTION", "ROLE", "LEVEL", "PLATFORM", "SITE", "WITHS"]);
-        let withs = result.withs.unwrap_or(Vec::new());
-        let withs = if withs.len() > 0 {
-            if full_withs {
-                format!("[{}]", withs.join(","))
-            } else {
-                format!("[{}...]", truncate(withs.join(",").as_ref(), 40))
-            }
+        if json {
+            let serialized =
+                serde_json::to_string_pretty(&result).expect("unable to unwrap result");
+            println!("{}", serialized);
         } else {
-            "[]".to_string()
-        };
-        table.add_row(row![
-            result.versionpin_id,
-            result.distribution,
-            result.coords.role,
-            result.coords.level,
-            result.coords.platform,
-            result.coords.site,
-            withs,
-        ]);
+            let withs = result.withs.unwrap_or(Vec::new());
+            let withs = if withs.len() > 0 {
+                if full_withs {
+                    format!("[{}]", withs.join(","))
+                } else {
+                    format!("[{}...]", truncate(withs.join(",").as_ref(), 40))
+                }
+            } else {
+                "[]".to_string()
+            };
+            let mut table = table!([bFg => "PIN ID", "DISTRIBUTION", "ROLE", "LEVEL", "PLATFORM", "SITE", "WITHS"]);
+            table.add_row(row![
+                result.versionpin_id,
+                result.distribution,
+                result.coords.role,
+                result.coords.level,
+                result.coords.platform,
+                result.coords.site,
+                withs,
+            ]);
 
-        table.set_format(*format::consts::FORMAT_CLEAN); //FORMAT_NO_LINESEP_WITH_TITLE  FORMAT_NO_BORDER_LINE_SEPARATOR
-        table.printstd();
+            table.set_format(*format::consts::FORMAT_CLEAN); //FORMAT_NO_LINESEP_WITH_TITLE  FORMAT_NO_BORDER_LINE_SEPARATOR
+            table.printstd();
+        }
     };
 
     Ok(())
