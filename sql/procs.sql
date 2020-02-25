@@ -1195,13 +1195,40 @@ CREATE OR REPLACE FUNCTION find_distribution_and_withs(
   role text default 'any',
   platform text default 'any'
 ) RETURNS TABLE(
+	versionpin_id integer,
+	distribution_id integer, 
+	pkgcoord_id integer,
 	distribution text,
+	package text,
+	version ltree,
+	level_name text,
+	level_path ltree,
+	site_name text,
+	site_path ltree,
+	role_name text,
+	role_path ltree,
+	platform_name text,
+	platform_path ltree,
 	withs text []
 ) AS $$ 
 BEGIN 
 	RETURN QUERY 
 	SELECT 
-		t1.distribution,t2.* 
+		t1.versionpin_id,
+		t1.distribution_id, 
+		t1.pkgcoord_id, 
+		t1.distribution,
+		t1.package,
+		t1.version,
+		t1.level_name,
+		t1.level_path,
+		t1.site_name,
+		t1.site_path,
+		t1.role_name,
+		t1.role_path,
+		t1.platform_name,
+		t1.platform_path,
+		t2.* 
 	FROM 
 		FIND_DISTRIBUTION(package_name, level, site, role, platform) AS t1 
 	INNER JOIN  
