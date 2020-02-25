@@ -35,6 +35,9 @@ pub enum PbFind {
         /// Do not truncate the withs if true. Defaults to false.
         #[structopt(short = "w", long = "withs", display_order = 8)]
         full_withs: bool,
+        /// Output as json if the flag is set
+        #[structopt(long, display_order = 9)]
+        json: bool,
     },
     #[structopt(display_order = 2)]
     /// Find all versionpins that meet supplied name and pin coordinate criteria.
