@@ -565,12 +565,13 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "levelspec"
-version = "0.8.0"
-source = "git+https://github.com/jlgerber/rust-lspec.git?tag=v0.8.0#e4184fd0c5d112dc79ed882ea5a8f0efcaf72324"
+version = "0.9.0"
+source = "git+https://github.com/jlgerber/rust-lspec.git?tag=v0.9.0#9ae3a732b2c7cf33d9af2645723cb940a611c603"
 dependencies = [
  "clap",
  "failure",
  "nom",
+ "serde",
 ]
 
 [[package]]
@@ -722,8 +723,8 @@ checksum = "2839e79665f131bdb5782e51f2c6c9599c133c6098982a54c794358bf432529c"
 
 [[package]]
 name = "packybara"
-version = "0.39.0"
-source = "git+https://github.com/jlgerber/packybara?tag=v0.39.0#975466ab9ae901a3182638042a1b6f9884e9eafb"
+version = "0.41.1"
+source = "git+https://github.com/jlgerber/packybara?tag=v0.41.1#b590f03167a6a402c92d7f9503406842d5e9bc33"
 dependencies = [
  "chrono",
  "env_logger",
@@ -733,6 +734,7 @@ dependencies = [
  "log",
  "postgres",
  "prettytable-rs",
+ "serde",
  "simple_xml_serialize",
  "simple_xml_serialize_macro",
  "snafu",
@@ -746,13 +748,14 @@ dependencies = [
 
 [[package]]
 name = "packybara-cli"
-version = "0.39.0"
+version = "0.41.0"
 dependencies = [
  "env_logger",
  "log",
  "main_error",
  "packybara",
  "prettytable-rs",
+ "serde_json",
  "structopt",
  "whoami",
 ]
@@ -1098,6 +1101,31 @@ name = "serde"
 version = "1.0.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "414115f25f818d7dfccec8ee535d76949ae78584fc4f79a6f45a904bf8ab4449"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.104"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "128f9e303a5a29922045a830221b8f78ec74a5f544944f3d5984f8ec3895ef64"
+dependencies = [
+ "proc-macro2 1.0.8",
+ "quote 1.0.2",
+ "syn 1.0.14",
+]
+
+[[package]]
+name = "serde_json"
+version = "1.0.48"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9371ade75d4c2d6cb154141b9752cf3781ec9c05e0e5cf35060e1e70ee7b9c25"
+dependencies = [
+ "itoa",
+ "ryu",
+ "serde",
+]
 
 [[package]]
 name = "sha2"

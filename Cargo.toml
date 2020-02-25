@@ -1,6 +1,6 @@
 [package]
 name = "packybara-cli"
-version = "0.39.0"
+version = "0.41.0"
 authors = ["jlgerber <jlgerber@gmail.com>"]
 edition = "2018"
 
@@ -12,10 +12,11 @@ path = "src/bin/main.rs"
 name = "pkb-setupdb"
 path = "src/bin/setupdb.rs"
 [dependencies]
-packybara = {git= "https://github.com/jlgerber/packybara", tag="v0.39.0"}
+packybara = {git= "https://github.com/jlgerber/packybara", tag="v0.41.1"}
 structopt = "0.3.9"
 prettytable-rs = "0.8.0"
 log = "0.4.8"
 env_logger = "0.7.1"
 whoami = "0.7.0"
 main_error = "0.1.0"
+serde_json = "1.0.48"
