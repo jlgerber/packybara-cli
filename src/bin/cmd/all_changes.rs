@@ -8,7 +8,10 @@
  *******************************************************/
 use super::args::PbFind;
 use packybara::db::traits::*;
-use packybara::packrat::{Client, PackratDb};
+use packybara::{
+    packrat::{Client, PackratDb},
+    Distribution,
+};
 use prettytable::{cell, format, row, table};
 
 /// Pretty print the set of changes from the database that match the provided criteria
@@ -37,7 +40,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
                 result.platform,
                 result.site,
                 result.package,
-                result.old,
+                result.old.unwrap_or(Distribution::empty()),
                 result.new
             ]);
         }
