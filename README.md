@@ -71,23 +71,23 @@ ON
 
 WITH auditvals AS 
     (
-select 
+SELECT 
     transaction_id as tx_id,
     client_query,
     action,
     row_data->'id' as id, 
     row_data-> 'coord' as coord, 
     row_data->'distribution' as dist,
-    case when action = 'UPDATE' then
+    CASE WHEN action = 'UPDATE' THEN
         changed_fields -> 'distribution'
-    else 
+    ELSE 
         ''
-    end as new_dist
-from 
+    END AS new_dist
+FROM 
     audit.logged_actions 
-where 
+WHERE 
     table_name='versionpin' AND 
-    row_data is not null AND 
+    row_data IS NOt null AND 
     audit.logged_actions.transaction_id=13521 AND 
     audit.logged_actions.client_query <> 'INSERT INTO REVISION (author, comment) VALUES ($1, $2)'
     )
@@ -119,5 +119,5 @@ INNER JOIN
     distribution_view as distribution2
 ON 
    CASE WHEN auditvals.action = 'UPDATE' THEN auditvals.new_dist::INTEGER 
-    ELSE auditvals.dist::INTEGER
-    END = distribution2.distribution_id;
+   ELSE auditvals.dist::INTEGER
+   END = distribution2.distribution_id;
