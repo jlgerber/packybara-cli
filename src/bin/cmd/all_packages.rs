@@ -21,14 +21,14 @@ use whoami;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::Packages { .. } = cmd {
         //let (level, role, site, site, mode) =
         //extract_coords(&level, &role, &site, &site, &search_mode);
         let mut pb = PackratDb::new(client);
         let mut results = pb.find_all_packages();
         //results.order_by(order_by.as_ref().map(Deref::deref));
-        let results = results.query()?;
+        let results = results.query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
 
@@ -44,16 +44,21 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
 }
 
 /// Add one or more packages
-pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn add<'a>(
+    mut tx: Transaction<'a>,
+    cmd: PbAdd,
+) -> Result<(), Box<dyn std::error::Error>> {
     //let mut pb = PackratDb::new(client);
     if let PbAdd::Packages { mut names, .. } = cmd {
         let comment = "Auto Comment - packages added";
         let username = whoami::username();
         //let resu  lts =
-        let result = PackratDb::add_packages(tx)
+        let result = PackratDb::add_packages()
             .packages(&mut names)
-            .create()?
-            .commit(&username, &comment)?;
+            .create(&mut tx)
+            .await?
+            .commit(&username, &comment, tx)
+            .await?;
         println!("{:?}", result);
     }
     Ok(())

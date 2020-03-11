@@ -21,7 +21,7 @@ use prettytable::{cell, format, row, table};
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::VersionPin {
         package,
         level,
@@ -43,7 +43,8 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
             .role(role.as_str())
             .platform(platform.as_str())
             .site(site.as_str())
-            .query()?;
+            .query()
+            .await?;
 
         if json {
             let serialized =

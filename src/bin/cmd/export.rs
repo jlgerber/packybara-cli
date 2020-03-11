@@ -19,9 +19,9 @@ use packybara::packrat::{self, Client};
 ///
 /// # Returns
 /// * A Unit if Ok, or a boxed error if Err
-pub fn export(client: Client, cmd: PbExport) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn export(client: Client, cmd: PbExport) -> Result<(), Box<dyn std::error::Error>> {
     let PbExport::PackagesXml { show, path, .. } = cmd;
     let mut db = packrat::PackratDb::new(client);
-    let result = xml::write_xml(&mut db, show, path)?;
+    let result = xml::write_xml(&mut db, show, path).await?;
     Ok(result)
 }

@@ -19,12 +19,12 @@ use prettytable::{cell, format, row, table};
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::VersionPinWiths { versionpin_id, .. } = cmd {
         //let (level, role, site, site, mode) =
         //extract_coords(&level, &role, &site, &site, &search_mode);
         let mut pb = PackratDb::new(client);
-        let results = pb.find_all_versionpin_withs(versionpin_id).query()?;
+        let results = pb.find_all_versionpin_withs(versionpin_id).query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
 

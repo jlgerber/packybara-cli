@@ -23,7 +23,7 @@ use std::str::FromStr;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::Roles {
         role,
         category,
@@ -50,7 +50,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
                 .collect::<Vec<OrderRoleBy>>();
             results.order_by(orders);
         }
-        let results = results.query()?;
+        let results = results.query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
 
@@ -66,14 +66,19 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
 }
 
 /// Add one or more roles
-pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn add<'a>(
+    mut tx: Transaction<'a>,
+    cmd: PbAdd,
+) -> Result<(), Box<dyn std::error::Error>> {
     if let PbAdd::Roles { mut names, .. } = cmd {
         let comment = "Auto Comment - Roles added";
         let username = whoami::username();
-        let results = PackratDb::add_roles(tx)
+        let results = PackratDb::add_roles()
             .roles(&mut names)
-            .create()?
-            .commit(&username, &comment)?;
+            .create(&mut tx)
+            .await?
+            .commit(&username, &comment, tx)
+            .await?;
         println!("{}", results);
     }
     Ok(())

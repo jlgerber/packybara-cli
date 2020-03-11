@@ -22,7 +22,7 @@ use std::str::FromStr;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::Distributions {
         package,
         version,
@@ -39,19 +39,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
             .version_opt(version.as_ref().map(Deref::deref))
             .order_direction_opt(Some(dir));
 
-        // if let Some(ref order) = order_by {
-        //     let orders = order
-        //         .split(",")
-        //         .map(|x| {
-        //             OrderPlatformBy::from_str(x).unwrap_or_else(|y| {
-        //                 log::warn!("invalid order-by argument:'{}'. {}", x, y);
-        //                 OrderPlatformBy::Name
-        //             })
-        //         })
-        //         .collect::<Vec<OrderPlatformBy>>();
-        //     results.order_by(orders);
-        // }
-        let results = results.query()?;
+        let results = results.query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
 

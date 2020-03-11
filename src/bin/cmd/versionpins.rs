@@ -27,7 +27,7 @@ use whoami;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::VersionPins {
         package,
         version,
@@ -84,7 +84,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
                 log::warn!("unable to apply search direction request {} to query", dir);
             }
         }
-        let results = results.query()?;
+        let results = results.query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
         // this has been moved into the queyr
@@ -127,7 +127,10 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
 }
 
 /// Add one or more versionpin changes
-pub fn set<'a>(tx: Transaction<'a>, cmd: PbSet) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn set<'a>(
+    mut tx: Transaction<'a>,
+    cmd: PbSet,
+) -> Result<(), Box<dyn std::error::Error>> {
     let PbSet::VersionPins {
         dist_ids,
         vpin_ids,
@@ -136,19 +139,26 @@ pub fn set<'a>(tx: Transaction<'a>, cmd: PbSet) -> Result<(), Box<dyn std::error
     } = cmd;
     assert_eq!(dist_ids.len(), vpin_ids.len());
     let username = whoami::username();
-    let mut update_versionpins = PackratDb::update_versionpins(tx);
+    let mut update_versionpins = PackratDb::update_versionpins();
     for cnt in 0..dist_ids.len() {
         let change = VersionPinChange::new(vpin_ids[cnt], Some(dist_ids[cnt]), None);
         update_versionpins = update_versionpins.change(change);
     }
 
-    let update_cnt = update_versionpins.update()?.commit(&username, &comment)?;
+    let update_cnt = update_versionpins
+        .update(&mut tx)
+        .await?
+        .commit(&username, &comment, tx)
+        .await?;
     println!("{}", update_cnt);
     Ok(())
 }
 
 /// Add one or more versionpin changes
-pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn add<'a>(
+    mut tx: Transaction<'a>,
+    cmd: PbAdd,
+) -> Result<(), Box<dyn std::error::Error>> {
     if let PbAdd::VersionPins {
         distribution,
         level,
@@ -160,7 +170,7 @@ pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error
         let pieces = distribution.split("-").collect::<Vec<_>>();
 
         let mut add_versionpins =
-            PackratDb::add_versionpins(tx, pieces[0].to_string(), pieces[1].to_string());
+            PackratDb::add_versionpins(pieces[0].to_string(), pieces[1].to_string());
         if let Some(level) = level {
             add_versionpins = add_versionpins.level(level);
         } else {
@@ -184,7 +194,11 @@ pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error
 
         let username = whoami::username();
         let comment = "auto added";
-        let update_cnt = add_versionpins.create()?.commit(&username, &comment)?;
+        let update_cnt = add_versionpins
+            .create(&mut tx)
+            .await?
+            .commit(&username, &comment, tx)
+            .await?;
         println!("{}", update_cnt);
     };
     Ok(())

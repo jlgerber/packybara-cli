@@ -33,7 +33,8 @@ pub struct Build {
     all: bool,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt = Build::from_args();
     if let Build {
         loglevel: Some(ref level),
@@ -54,20 +55,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let drop_db = "DROP DATABASE IF EXISTS packrat";
     let create_db = "CREATE DATABASE packrat WITH ENCODING = UTF8";
     log::info!("executing SQL\n{}", drop_db);
-    let mut client = Client::connect(
-        "host=127.0.0.1 user=postgres dbname=postgres password=example port=5432",
+    // let mut client = Client::connect(
+    //     "host=127.0.0.1 user=postgres dbname=postgres password=example port=5432",
+    //     NoTls,
+    // )?;
+
+    let (mut client, _connection) = tokio_postgres::connect(
+        "host=localhost user=postgres  dbname=postgres password=example port=5432",
         NoTls,
-    )?;
+    )
+    .await?;
+
     if rebuild || all {
-        client.execute(drop_schema, &[])?;
-        client.execute(drop_db, &[])?;
-        client.execute(create_db, &[])?;
+        client.execute(drop_schema, &[]).await?;
+        client.execute(drop_db, &[]).await?;
+        client.execute(create_db, &[]).await?;
     }
 
-    let mut client = Client::connect(
-        "host=127.0.0.1 user=postgres dbname=packrat password=example port=5432",
+    let (mut client, _connection) = tokio_postgres::connect(
+        "host=localhost user=postgres  dbname=packrat password=example port=5432",
         NoTls,
-    )?;
+    )
+    .await?;
     let mut files = Vec::new();
 
     if rebuild || all {
@@ -91,7 +100,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let contents = fs::read_to_string(file_path)?;
         log::info!("batch executing {}", file_path);
         log::debug!("{}", contents);
-        client.batch_execute(contents.as_str())?;
+        client.batch_execute(contents.as_str()).await?;
     }
     Ok(())
 }

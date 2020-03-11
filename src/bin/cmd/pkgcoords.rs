@@ -21,7 +21,7 @@ use std::ops::Deref;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::PkgCoords {
         package,
         level,
@@ -45,7 +45,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
         if let Some(ref mode) = search_mode {
             results.search_mode(SearchMode::try_from_str(mode)?);
         }
-        let results = results.query()?;
+        let results = results.query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
         let mut table = table!([bFg => "ID","PACKAGE", "ROLE", "LEVEL", "PLATFORM", "SITE"]);

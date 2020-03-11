@@ -23,7 +23,7 @@ use std::str::FromStr;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::Withs {
         package,
         level,
@@ -55,7 +55,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
                 .collect::<Vec<SearchAttribute>>();
             results.order_by(orders);
         }
-        let results = results.query()?;
+        let results = results.query().await?;
         let mut table =
             table!([bFg => "PIN ID", "DISTRIBUTION", "ROLE", "LEVEL", "PLATFORM", "SITE"]);
         for result in results {
@@ -76,7 +76,10 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
 }
 
 /// Add withs
-pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn add<'a>(
+    mut tx: Transaction<'a>,
+    cmd: PbAdd,
+) -> Result<(), Box<dyn std::error::Error>> {
     if let PbAdd::Withs {
         withs,
         comment,
@@ -85,9 +88,11 @@ pub fn add<'a>(tx: Transaction<'a>, cmd: PbAdd) -> Result<(), Box<dyn std::error
     } = cmd
     {
         let author = whoami::username();
-        let results = PackratDb::add_withs(tx)
-            .create(vpin_id, withs)?
-            .commit(&author, &comment)?;
+        let results = PackratDb::add_withs()
+            .create(&mut tx, vpin_id, withs)
+            .await?
+            .commit(&author, &comment, tx)
+            .await?;
         println!("{}", results);
     }
     Ok(())

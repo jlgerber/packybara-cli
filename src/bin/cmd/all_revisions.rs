@@ -22,7 +22,7 @@ use std::str::FromStr;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::Revisions {
         id,
         transaction_id,
@@ -55,7 +55,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
             .order_by(order_by_vec)
             .order_direction_opt(order_dir)
             .limit_opt(limit);
-        let results = results.query()?;
+        let results = results.query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
         let mut table = table!([bFg => "ID","TRANSACTION ID", "AUTHOR", "DATETIME", "COMMENT"]);

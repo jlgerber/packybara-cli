@@ -20,14 +20,14 @@ use std::ops::Deref;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::Sites { site, .. } = cmd {
         //let (level, role, site, site, mode) =
         //extract_coords(&level, &role, &site, &site, &search_mode);
         let mut pb = PackratDb::new(client);
         let mut results = pb.find_all_sites();
         results.name_opt(site.as_ref().map(Deref::deref));
-        let results = results.query()?;
+        let results = results.query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
 

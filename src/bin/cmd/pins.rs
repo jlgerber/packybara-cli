@@ -22,7 +22,7 @@ use std::str::FromStr;
 ///
 /// # Returns
 /// * a Unit if Ok, or a boxed error if Err
-pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error>> {
     if let PbFind::Pins {
         level,
         role,
@@ -50,7 +50,7 @@ pub fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error::Error
                 .collect::<Vec<SearchAttribute>>();
             results.order_by(orders);
         }
-        let results = results.query()?;
+        let results = results.query().await?;
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
         let mut table = table!([bFg => "ROLE", "LEVEL", "PLATFORM", "SITE"]);
