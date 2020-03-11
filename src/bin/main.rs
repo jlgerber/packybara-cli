@@ -15,7 +15,7 @@ use env_logger::Env;
 use main_error::MainError;
 use std::env;
 use tokio;
-use tokio_postgres::{Error, NoTls};
+use tokio_postgres::NoTls;
 
 #[tokio::main]
 async fn main() -> Result<(), MainError> {
@@ -33,12 +33,17 @@ async fn main() -> Result<(), MainError> {
     //     NoTls,
     // )?;
 
-    let (mut client, _connection) = tokio_postgres::connect(
-        "host=localhost user=postgres  dbname=packrat password=example port=5432",
+    let (mut client, connection) = tokio_postgres::connect(
+        "host=127.0.0.1 user=postgres  dbname=packrat password=example port=5432",
         NoTls,
     )
     .await?;
 
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            eprintln!("connection error: {}", e);
+        }
+    });
     let Pb { crud, .. } = opt;
     match crud {
         PbCrud::Find { cmd } => match cmd {

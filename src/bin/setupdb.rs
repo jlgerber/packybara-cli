@@ -9,7 +9,7 @@
 use env_logger;
 use env_logger::Env;
 use log;
-use packybara::packrat::{Client, NoTls};
+use packybara::packrat::NoTls;
 use std::env;
 use std::fs;
 use structopt::StructOpt;
@@ -60,11 +60,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     NoTls,
     // )?;
 
-    let (mut client, _connection) = tokio_postgres::connect(
+    let (client, connection) = tokio_postgres::connect(
         "host=localhost user=postgres  dbname=postgres password=example port=5432",
         NoTls,
     )
     .await?;
+
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            eprintln!("connection error: {}", e);
+        }
+    });
 
     if rebuild || all {
         client.execute(drop_schema, &[]).await?;
@@ -72,11 +78,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         client.execute(create_db, &[]).await?;
     }
 
-    let (mut client, _connection) = tokio_postgres::connect(
+    let (client, connection2) = tokio_postgres::connect(
         "host=localhost user=postgres  dbname=packrat password=example port=5432",
         NoTls,
     )
     .await?;
+    tokio::spawn(async move {
+        if let Err(e) = connection2.await {
+            eprintln!("connection error: {}", e);
+        }
+    });
     let mut files = Vec::new();
 
     if rebuild || all {

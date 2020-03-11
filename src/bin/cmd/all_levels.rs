@@ -51,7 +51,10 @@ pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error:
                 .collect::<Vec<OrderLevelBy>>();
             results.order_by(orders);
         }
+
+        println!("calling queruy");
         let results = results.query().await?;
+        println!("query returned");
         // For now I do this. I need to add packge handling into the query
         // either by switching functions or handling the sql on this end
 
@@ -59,7 +62,7 @@ pub async fn find(client: Client, cmd: PbFind) -> Result<(), Box<dyn std::error:
         for result in results {
             table.add_row(row![result.level, result.show]);
         }
-        table.set_format(*format::consts::FORMAT_CLEAN); //FORMAT_NO_LINESEP_WITH_TITLE  FORMAT_NO_BORDER_LINE_SEPARATOR
+        table.set_format(*format::consts::FORMAT_CLEAN);
         table.printstd();
     };
 
