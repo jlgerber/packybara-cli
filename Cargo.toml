@@ -13,7 +13,7 @@ name = "pkb-setupdb"
 path = "src/bin/setupdb.rs"
 
 [dependencies]
-packybara = {git= "https://github.com/jlgerber/packybara", tag="async_v0.45.1"}
+packybara = {git= "https://github.com/jlgerber/packybara", tag="async_v0.54.1"}
 structopt = "0.3.11"
 prettytable-rs = "0.8.0"
 log = "0.4.8"

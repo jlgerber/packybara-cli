@@ -550,8 +550,8 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "levelspec"
-version = "0.9.0"
-source = "git+https://github.com/jlgerber/rust-lspec.git?tag=v0.9.0#9ae3a732b2c7cf33d9af2645723cb940a611c603"
+version = "0.10.0"
+source = "git+https://github.com/jlgerber/rust-lspec.git?tag=v0.10.0#021601f6de4fb6d380c947e639a3162a1b9f3619"
 dependencies = [
  "clap",
  "failure",
@@ -705,8 +705,8 @@ checksum = "2839e79665f131bdb5782e51f2c6c9599c133c6098982a54c794358bf432529c"
 
 [[package]]
 name = "packybara"
-version = "0.45.1"
-source = "git+https://github.com/jlgerber/packybara?tag=async_v0.45.1#dc99bb999f58ac86243ffd1e6f2112f09bed6fe9"
+version = "0.54.1"
+source = "git+https://github.com/jlgerber/packybara?tag=async_v0.54.1#d3c622f804f9a778aab2c8134e3adf195547b682"
 dependencies = [
  "async-trait",
  "chrono",
@@ -715,7 +715,6 @@ dependencies = [
  "itertools",
  "levelspec",
  "log",
- "postgres",
  "prettytable-rs",
  "serde",
  "simple_xml_serialize",
@@ -804,20 +803,6 @@ name = "pin-utils"
 version = "0.1.0-alpha.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5894c618ce612a3fa23881b152b608bafb8c56cfc22f434a3ba3120b40f7b587"
-
-[[package]]
-name = "postgres"
-version = "0.17.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18741b59a558e4dfdb9c968e8126dccbefd6a16bf54e3bc5668d420b4c4ed71b"
-dependencies = [
- "bytes",
- "fallible-iterator",
- "futures",
- "log",
- "tokio",
- "tokio-postgres",
-]
 
 [[package]]
 name = "postgres-protocol"
